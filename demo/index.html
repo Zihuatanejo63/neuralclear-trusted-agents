@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeuralClear for Trusted Agents — Offline Demo</title>
+<style>
+  :root {
+    --ink: #1c1a16;
+    --muted: #6b665c;
+    --paper: #f7f5f0;
+    --card: #ffffff;
+    --line: #e3ded2;
+    --accent: #205c40;
+    --accent-soft: #e7f0ea;
+    --warn-bg: #fdf3e0;
+    --warn-line: #e5cf9e;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font: 16px/1.55 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 20px 64px; }
+  .banner {
+    background: var(--warn-bg); border: 1px solid var(--warn-line);
+    border-radius: 8px; padding: 10px 16px; text-align: center;
+    font-weight: 600; letter-spacing: .02em;
+  }
+  h1 { font-size: 30px; margin: 28px 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 8px; }
+  h2 { font-size: 20px; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--line); }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px 20px; margin: 14px 0;
+  }
+  .step-num {
+    display: inline-block; background: var(--accent); color: #fff; border-radius: 50%;
+    width: 26px; height: 26px; line-height: 26px; text-align: center; font-size: 14px;
+    font-weight: 700; margin-right: 8px; vertical-align: 2px;
+  }
+  .step-title { font-weight: 700; font-size: 17px; }
+  .big {
+    font-size: 26px; font-weight: 700; margin: 6px 0;
+  }
+  .arrow { color: var(--muted); font-weight: 400; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 4px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.total td { font-weight: 700; border-bottom: none; }
+  code, .mono { font-family: var(--mono); font-size: 13px; word-break: break-all; }
+  .ok { color: var(--accent); font-weight: 700; }
+  .pill {
+    display: inline-block; background: var(--accent-soft); color: var(--accent);
+    border-radius: 999px; padding: 2px 10px; font-size: 13px; font-weight: 600;
+  }
+  .kv { display: grid; grid-template-columns: 170px 1fr; gap: 4px 14px; margin: 8px 0; }
+  .kv dt { color: var(--muted); }
+  .kv dd { margin: 0; }
+  .note { color: var(--muted); font-size: 14px; }
+  footer { margin-top: 44px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 16px; }
+  @media (max-width: 560px) { .kv { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="banner">Offline demo &middot; testnet project &middot; example data</div>
+
+  <h1>NeuralClear for Trusted Agents</h1>
+  <p class="sub">
+    Badge-gated escrow clearing for agent-to-agent micro-transactions on Concordium:
+    many small obligations are netted off-chain, and only the net amount is paid once via x402.
+  </p>
+  <p class="note">
+    This page shows one full settlement round produced by the project's offline demo
+    (<code>npm run demo</code>, run on 2026-11-27). All amounts are testnet CCD with no real-world value.
+    The payment leg shown here is the offline stand-in, not a chain transaction; live testnet settlement
+    is pending the demo accounts described in the status section below.
+  </p>
+
+  <h2>The round, step by step</h2>
+
+  <div class="card">
+    <span class="step-num">1</span><span class="step-title">Parties &amp; escrow deposit</span>
+    <dl class="kv">
+      <dt>Buyer</dt>
+      <dd><code>34sQTxEssRTT7rDHmsmyf5TPYAcNWV27x3hKsBagu9eKZjmoik</code> (testnet owner account)</dd>
+      <dt>Seller</dt>
+      <dd><code>SELLER_ACCOUNT_PENDING_CREATION</code> — placeholder; the seller testnet account has not been created yet</dd>
+      <dt>Network</dt>
+      <dd><code>ccd:4221332d34e1694168c2a0c0b3fd0f27</code> (Concordium testnet, CAIP-2)</dd>
+      <dt>Escrow deposit</dt>
+      <dd><strong>0.71 CCD</strong> held for <code>order-demo-001</code> before delivery starts</dd>
+    </dl>
+    <p class="note">
+      In the full flow, both agents first verify each other's <em>Verified by Concordium</em> badge
+      (Agent Registry, CIS-8004 / CIS-8) and refuse to trade if the badge is missing or revoked.
+      The two agents' final Agent Cards have been generated with the official registry MCP and are
+      hosted byte-for-byte in the public repository; on-chain registration is still pending
+      (owner wallet signatures required).
+    </p>
+  </div>
+
+  <div class="card">
+    <span class="step-num">2</span><span class="step-title">Delivery &mdash; 12 metered micro-obligations</span>
+    <p class="note">Each delivery creates one obligation and one entry in the hash-chained audit log.</p>
+    <table>
+      <tr><th>Service</th><th>Direction</th><th class="num">Count</th><th class="num">Unit price</th><th class="num">Subtotal</th></tr>
+      <tr><td><code>fetch-ccd-eur-price</code></td><td>buyer &rarr; seller</td><td class="num">7</td><td class="num">0.05 CCD</td><td class="num">0.35 CCD</td></tr>
+      <tr><td><code>summarise-ccd-day</code></td><td>buyer &rarr; seller</td><td class="num">3</td><td class="num">0.12 CCD</td><td class="num">0.36 CCD</td></tr>
+      <tr><td><code>service-rebate</code></td><td>seller &rarr; buyer</td><td class="num">2</td><td class="num">0.03 CCD</td><td class="num">0.06 CCD</td></tr>
+      <tr class="total"><td colspan="2">Gross obligations</td><td class="num">12</td><td></td><td class="num">0.77 CCD</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <span class="step-num">3</span><span class="step-title">Netting &mdash; 12 obligations become 1 transfer</span>
+    <p class="big">0.77 CCD <span class="arrow">gross &rarr;</span> 0.65 CCD <span class="arrow">net, in</span> 1 transfer</p>
+    <p class="note">
+      The buyer owes 0.71 CCD, the seller owes 0.06 CCD back in rebates. The netting engine collapses
+      both directions into a single buyer &rarr; seller transfer of <strong>650,000 microCCD</strong>,
+      so only one x402 payment (exact scheme, sponsored V1 transaction, facilitator pays the fee)
+      is needed for the whole batch.
+    </p>
+  </div>
+
+  <div class="card">
+    <span class="step-num">4</span><span class="step-title">Escrow release &amp; refund</span>
+    <dl class="kv">
+      <dt>Released to seller</dt><dd><strong>0.65 CCD</strong> (the net amount)</dd>
+      <dt>Refunded to buyer</dt><dd><strong>0.06 CCD</strong> (deposit 0.71 &minus; released 0.65)</dd>
+      <dt>Final balances</dt><dd>buyer 4.35 CCD &middot; seller 0.65 CCD (demo ledger, reconciled)</dd>
+      <dt>Payment leg (offline)</dt><dd><code>offline:8ab27f2eba444d3b0e7ffd2e86dad9d9a66d3ac7b4496f896f449a9c22bb9538</code></dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <span class="step-num">5</span><span class="step-title">Hash-chained audit log</span>
+    <dl class="kv">
+      <dt>Entries</dt><dd>18 (escrow, delivery, netting, settlement and receipt events)</dd>
+      <dt>Chain verification</dt><dd><span class="pill">verify = true</span> — full chain recomputed, no gaps or edits</dd>
+      <dt>Head hash</dt><dd><code>ffeea10f4f1ec7b0ed518a073206c5dd0c450fe5d940be1609945361e9ee1bbb</code></dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <span class="step-num">6</span><span class="step-title">Signed settlement receipt (Ed25519)</span>
+    <dl class="kv">
+      <dt>Receipt ID</dt><dd><code>rcpt-batch-demo-001</code></dd>
+      <dt>Signature check</dt><dd><span class="pill">verify = true</span></dd>
+      <dt>Receipt hash</dt><dd><code>b049eed27f95fcef9555d02a5f03cafcc1e0f368801e10527da9dbe668a5d58a</code></dd>
+      <dt>Bound fields</dt>
+      <dd>gross 770,000 microCCD &middot; net 650,000 microCCD &middot; 12 obligations &middot; audit head hash &middot; payment tx id</dd>
+    </dl>
+    <p class="note">
+      The receipt payload binds the amounts, the obligation count, the audit-chain head and the
+      payment transaction id, so any later change to the batch invalidates the signature.
+      Hashes differ between runs because the payload carries an issuance timestamp.
+    </p>
+  </div>
+
+  <h2>Project status (honest snapshot, 2026-11-27)</h2>
+  <div class="card">
+    <table>
+      <tr><th>Item</th><th>Status</th></tr>
+      <tr><td>Settlement core (escrow ledger, hash chain, netting, Ed25519 receipts)</td><td>Implemented; offline end-to-end demo passes, TypeScript build clean</td></tr>
+      <tr><td>Self-hosted x402 facilitator service</td><td>Runs locally; verify/settle round-trip validated offline (dry-run). Live mode refuses to start without the facilitator key file</td></tr>
+      <tr><td>Agent Cards</td><td>Final versions generated via the official Agent Registry MCP and hosted byte-for-byte in the public repo (SHA-256 matches the MCP output)</td></tr>
+      <tr><td>On-chain agent registration + badges</td><td>Pending — needs three testnet accounts (buyer / seller / facilitator) and four owner wallet signatures</td></tr>
+      <tr><td>Live testnet x402 settlement</td><td>Pending — needs the buyer and facilitator test private keys exported from the wallet</td></tr>
+      <tr><td>Production</td><td>Not a production product. See <code>docs/path-to-production.md</code> in the repository for the gap list</td></tr>
+    </table>
+  </div>
+
+  <footer>
+    NeuralClear for Trusted Agents — a Concordium Trusted Agents Hackathon (Encode Club) entry.
+    Testnet demonstration only; not a production payment product, with no customers and no live volume.
+    Amounts on this page are example data from a local offline run.
+  </footer>
+
+</div>
+</body>
+</html>

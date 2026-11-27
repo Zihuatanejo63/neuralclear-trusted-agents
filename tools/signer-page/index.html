@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NeuralClear — Pin agent card hashes (testnet)</title>
+<style>
+  body { font-family: Georgia, 'Times New Roman', serif; background: #f4f1ea; color: #1c1a16; margin: 2rem auto; max-width: 760px; padding: 0 1rem; }
+  h1 { font-size: 1.4rem; } h2 { font-size: 1.1rem; margin-top: 2rem; }
+  .card { background: #fffdf8; border: 1px solid #d8d2c4; border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; }
+  button { font: inherit; background: #1c1a16; color: #f4f1ea; border: 0; border-radius: 6px; padding: 0.55rem 1.1rem; cursor: pointer; }
+  button:hover { background: #b3372a; }
+  code { font-family: ui-monospace, Menlo, monospace; font-size: 0.82rem; word-break: break-all; }
+  pre { background: #1c1a16; color: #f4f1ea; padding: 0.8rem; border-radius: 6px; white-space: pre-wrap; word-break: break-all; min-height: 3rem; }
+  .muted { color: #6b665a; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<h1>Pin agent card hashes on-chain · 钉住卡片哈希</h1>
+<p class="muted">Local signing page for the NeuralClear demo agents on Concordium <b>testnet</b>.
+Each button asks your browser wallet to sign one <code>CIS-8004.setAgentURI</code> call on contract
+<code>12802</code> from the owner account — the same URI as now, with the hash of the updated card.
+Amount 0 CCD, max energy 30000. Nothing else is sent.</p>
+
+<p><button id="connect">1 · Connect wallet</button></p>
+<p id="account">Not connected yet. Owner must be <code>34sQTxEssRTT7rDHmsmyf5TPYAcNWV27x3hKsBagu9eKZjmoik</code></p>
+
+<div class="card">
+  <h2>Buyer agent · token 1541</h2>
+  <p>URI: <code>https://raw.githubusercontent.com/Zihuatanejo63/neuralclear-trusted-agents/main/cards/buyer-agent-card.json</code><br>
+  New metadata hash: <code>0855ba4328948e3ccb804156784eca917e3e6db5936c811fc5f675d03f4c1166</code></p>
+  <p><button id="sign-buyer">2 · Sign setAgentURI — Buyer #1541</button></p>
+</div>
+
+<div class="card">
+  <h2>Seller agent · token 1542</h2>
+  <p>URI: <code>https://raw.githubusercontent.com/Zihuatanejo63/neuralclear-trusted-agents/main/cards/seller-agent-card.json</code><br>
+  New metadata hash: <code>3ac49db458d83a738db9194c89657ef5036ec50ba4a30dcbb897b6b00b5de1a5</code></p>
+  <p><button id="sign-seller">3 · Sign setAgentURI — Seller #1542</button></p>
+</div>
+
+<h2>Log</h2>
+<pre id="log"></pre>
+<script src="signer.js"></script>
+</body>
+</html>
