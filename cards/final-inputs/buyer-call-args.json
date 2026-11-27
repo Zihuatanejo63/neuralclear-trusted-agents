@@ -1,0 +1,51 @@
+{
+ "network": "testnet",
+ "name": "NeuralClear Buyer Agent",
+ "description": "Buyer-side demo agent for NeuralClear for Trusted Agents (Concordium Trusted Agents Hackathon, testnet demo — not a production payment product). Purchases metered micro-services from badge-verified seller agents, deposits the order amount into escrow, records deliveries in a hash-chained audit log, and settles only the net amount once via x402. Refuses to trade with agents whose Verified by Concordium badge does not verify.",
+ "agent_uri": "https://raw.githubusercontent.com/Zihuatanejo63/neuralclear-trusted-agents/main/cards/buyer-agent-card.json",
+ "owner_account": "34sQTxEssRTT7rDHmsmyf5TPYAcNWV27x3hKsBagu9eKZjmoik",
+ "provider": {
+  "organization": "NeuralClear",
+  "url": "https://neuralclear.org"
+ },
+ "skills": [
+  {
+   "description": "Opens an order with a badge-verified seller agent and deposits the order amount into the NeuralClear escrow ledger (testnet CCD).",
+   "id": "place-order",
+   "name": "Place order",
+   "tags": [
+    "order",
+    "escrow",
+    "ccd",
+    "neuralclear"
+   ]
+  },
+  {
+   "description": "Checks a delivery against the hash-chained audit log and confirms it, making the corresponding micro-obligation eligible for netting.",
+   "id": "confirm-delivery",
+   "name": "Confirm delivery",
+   "tags": [
+    "delivery",
+    "audit",
+    "hash-chain",
+    "neuralclear"
+   ]
+  },
+  {
+   "description": "Asks the settlement engine to net all confirmed micro-obligations with a counterparty and settle the single net amount via x402, receiving an Ed25519-signed receipt.",
+   "id": "request-net-settlement",
+   "name": "Request net settlement",
+   "tags": [
+    "settlement",
+    "netting",
+    "x402",
+    "receipt"
+   ]
+  }
+ ],
+ "services": {
+  "a2a": "https://raw.githubusercontent.com/Zihuatanejo63/neuralclear-trusted-agents/main/cards/buyer/.well-known/agent-card.json",
+  "mcp": "https://raw.githubusercontent.com/Zihuatanejo63/neuralclear-trusted-agents/main/cards/buyer/mcp"
+ },
+ "version": "1.0.0"
+}

@@ -1,0 +1,90 @@
+{
+  "name": "NeuralClear Seller Agent",
+  "description": "Seller-side demo agent for NeuralClear for Trusted Agents (Concordium Trusted Agents Hackathon, testnet demo — not a production payment product). Sells a metered CCD/EUR market-data micro-service to badge-verified buyer agents. Every delivery is appended to a hash-chained audit log; payment is accepted only as a single net x402 settlement for accumulated micro-obligations, closed by an Ed25519-signed receipt. Refuses orders from agents whose Verified by Concordium badge does not verify.",
+  "url": "https://raw.githubusercontent.com/Zihuatanejo63/neuralclear-trusted-agents/main/cards/seller-agent-card.json",
+  "version": "1.0.0",
+  "defaultInputModes": [
+    "text/markdown",
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "text/markdown",
+    "application/json"
+  ],
+  "authentication": {
+    "schemes": []
+  },
+  "skills": [
+    {
+      "id": "fetch-ccd-eur-price",
+      "name": "Fetch CCD/EUR price",
+      "description": "Returns the current CCD/EUR mid-market price as a metered micro-delivery; each call is one micro-obligation recorded in the hash-chained audit log.",
+      "tags": [
+        "market",
+        "price",
+        "ccd",
+        "metered"
+      ]
+    },
+    {
+      "id": "summarise-ccd-day",
+      "name": "Summarise CCD day",
+      "description": "Returns a one-paragraph summary of today's CCD price action as a metered micro-delivery.",
+      "tags": [
+        "market",
+        "summary",
+        "ccd",
+        "metered"
+      ]
+    },
+    {
+      "id": "accept-net-settlement",
+      "name": "Accept net settlement",
+      "description": "Accepts one net x402 payment covering all confirmed micro-obligations from a badge-verified buyer and co-closes the batch with an Ed25519-signed receipt.",
+      "tags": [
+        "settlement",
+        "netting",
+        "x402",
+        "receipt"
+      ]
+    }
+  ],
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "extensions": [
+      {
+        "uri": "https://docs.concordium.com/a2a-extensions/concordium-badge/v1",
+        "description": "Verified by Concordium badge — on-chain agent identity in a CIS-8004 registry",
+        "required": false,
+        "params": {
+          "tokenAddress": null,
+          "owner": {
+            "account": "ccd:4221332d34e1694168c2a0c0b3fd0f27:34sQTxEssRTT7rDHmsmyf5TPYAcNWV27x3hKsBagu9eKZjmoik"
+          },
+          "agentWallet": "ccd:4221332d34e1694168c2a0c0b3fd0f27:34sQTxEssRTT7rDHmsmyf5TPYAcNWV27x3hKsBagu9eKZjmoik",
+          "contracts": {
+            "cis8004": "ccd:4221332d34e1694168c2a0c0b3fd0f27:12802.0",
+            "cis8": "ccd:4221332d34e1694168c2a0c0b3fd0f27:12801.0"
+          },
+          "services": {
+            "a2a": "https://raw.githubusercontent.com/Zihuatanejo63/neuralclear-trusted-agents/main/cards/seller/.well-known/agent-card.json",
+            "mcp": "https://raw.githubusercontent.com/Zihuatanejo63/neuralclear-trusted-agents/main/cards/seller/mcp",
+            "x402": "https://raw.githubusercontent.com/Zihuatanejo63/neuralclear-trusted-agents/main/cards/seller/x402/market-data"
+          },
+          "verify": "Resolve tokenAddress via CIS-8004 agent_of; confirm owner + status=Active + card SHA-256 == metadata_hash.",
+          "verification": {
+            "service": "Concordium Agent Registry",
+            "verifyUrl": "https://agent-registry-mcp.concordium.com/v1/badge-check/34sQTxEssRTT7rDHmsmyf5TPYAcNWV27x3hKsBagu9eKZjmoik",
+            "mcp": "https://agent-registry-mcp.concordium.com/mcp",
+            "docs": "https://docs.concordium.com/en/mainnet/technical-reference/agent-registry/concordium-badge.html"
+          }
+        }
+      }
+    ]
+  },
+  "provider": {
+    "organization": "NeuralClear",
+    "url": "https://neuralclear.org"
+  }
+}
