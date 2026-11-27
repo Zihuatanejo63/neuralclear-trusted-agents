@@ -1,8 +1,8 @@
 # Path to Production — 初稿（2026-11-27）
 
-> 状态：初稿。本文描述从当前 **testnet 演示** 到生产形态之间的差距，不构成上线承诺。
-> 当前项目是黑客松参赛 demo：离线闭环已跑通、Agent Card 已生成并托管、facilitator 已完成
-> 本地 dry-run 联调；链上注册与真实 testnet 结算尚未完成。文中「已具备」只指 demo 范围内
+> 状态：滚动修订版（基线更新至 2026-11-27 第五阶段）。本文描述从当前 **testnet 演示** 到生产形态之间的差距，不构成上线承诺。
+> 当前项目是黑客松参赛 demo：离线闭环已跑通、Agent Card 已生成并托管、facilitator 已 live
+> 点火、链上注册与真实 testnet 结算均已完成并链上复核；文中「已具备」只指 demo 范围内
 > 经实测验证的部分，「缺口」是仍需建设或决策的事项，不夸大。
 
 ## 0. 当前基线（2026-11-27 实测）
@@ -13,7 +13,8 @@
 | x402 facilitator 服务 | ✅ 本地可运行，dry-run 往返 14 项断言全过；live 模式无钥拒绝启动（见 progress-2026-11-27-facilitator.md） |
 | Agent Card | ✅ 官方 MCP 生成最终版，公开仓逐字节托管，SHA-256 与 MCP 返回值一致（见 progress-2026-11-27-phase3-cards.md 完成补记） |
 | testnet 身份与 owner 账户 | ✅ testnet 简化身份已签发、20,000 test CCD 已到账 |
-| 链上注册 / 徽章 / 真实 testnet 结算 | ❌ 未做——等建 3 个 testnet 账户、导出买方/facilitator 测试私钥、owner 点签 4 次 |
+| 链上注册 / 徽章 | ✅ 买方 token 1541、卖方 token 1542 已注册（CIS-8004 testnet 12802），setAgentURI 钉哈希，官方 check_badge 双双 badge_valid=true（见 progress-2026-11-27-phase4-registration.md） |
+| 真实 testnet 结算 | ✅ 同批 12 笔义务净额 0.65 CCD 经自托管 facilitator 赞助上链、finalized，余额链上复核一致（见 progress-2026-11-27-phase5-online-settlement.md） |
 
 ---
 
@@ -49,8 +50,13 @@
 - **运营可用性**：当前是单进程本地服务，无高可用、无限流、无多实例；生产形态需要
   部署、扩缩容与故障切换方案。facilitator 是收付之外的第三方账户这一协议要求，
   在生产上还意味着运营主体与交易双方的利益隔离须可证明。
-- **真实往返未验证**：第一笔真实 testnet settle 尚未跑过（等私钥导出），SDK 联签、
-  提交与最终确定的时延与失败模式未知，须在 testnet 先完成并记录。
+- **真实往返已验证（testnet）**：第一笔真实 settle 已跑通（0.65 CCD 净额、finalized、
+  余额复核一致，见第五阶段记录）。仍未知的是主网时延/失败模式与批量并发下的表现，
+  须在主网小额灰度阶段重新测算。
+- **赞助费经济性**：testnet 实测一笔赞助转账的 sponsor cost 为 4.997954 CCD
+  （energyCost 635 NRG），约为 0.65 CCD 转账额的 7.7 倍——这是单笔观察值，但它
+  说明赞助模式下 facilitator 的费用结构（而非转账额）才是成本主项：资金池规模、
+  垫付定价与「净额结算摊薄固定费用」的批量策略必须按主网实测费率建模后才能上线。
 
 ## 3. 合规与争议处理
 
@@ -92,8 +98,8 @@
 2. **主网身份与账户**：主网实名 ID 签发 → 建 owner / 买方 / 卖方 / facilitator 主网账户拓扑，
    facilitator 账户注入运营资金并设定水位告警（§2、§4）。
 3. **主网注册**：以主网合约坐标（CIS-8004 10082 / CIS-8 10081）重新生成两张 Agent Card，
-   逐字节托管 → 注册点签 → 徽章核验 → set_agent_uri 钉哈希；全流程先在 testnet 把
-   待办的注册与真实结算完整走一遍并留档，作为主网操作的演练记录。
+   逐字节托管 → 注册点签 → 徽章核验 → set_agent_uri 钉哈希；该全流程已在 testnet 完整
+   走通并留档（第四、五阶段记录），可直接作为主网操作手册。
 4. **密钥与部署**：facilitator 私钥迁入 KMS/HSM，服务按生产形态部署（限流、熔断、
    对账、监控告警齐备后才开 live）。
 5. **灰度**：小额、邀请制对手方先行，争议规则文本与申诉通道同步上线；对账无差异、

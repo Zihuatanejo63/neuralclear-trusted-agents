@@ -11,6 +11,7 @@ import {
 } from "@x402/concordium";
 import { ExactConcordiumScheme } from "@x402/concordium/exact/facilitator";
 import type {
+  Network,
   PaymentPayload,
   PaymentRequirements,
   SettleResponse,
@@ -46,15 +47,10 @@ export const FACILITATOR_NETWORK = CONCORDIUM_TESTNET_CAIP2;
  * be a third account, independent of buyer and seller (verify Rule 9),
  * funded with a little test CCD to pay sponsored fees.
  */
-export function createFacilitatorSchemeFromEnv(): ExactConcordiumScheme {
-  const address = process.env.CCD_FACILITATOR_ADDRESS;
-  const privateKey = process.env.CCD_FACILITATOR_PRIVATE_KEY;
-  if (!address || !privateKey) {
-    throw new Error(
-      "facilitator: CCD_FACILITATOR_ADDRESS / CCD_FACILITATOR_PRIVATE_KEY are not set. " +
-        "This is a pending-key step: export the facilitator testnet account key from the wallet first.",
-    );
-  }
+export function createFacilitatorScheme(
+  address: string,
+  privateKey: string,
+): ExactConcordiumScheme {
   const [host, port] = parseGrpcUrl(getConcordiumGrpcUrl(FACILITATOR_NETWORK));
   const signer = toConcordiumFacilitatorSigner(address, privateKey, {
     host,
@@ -68,6 +64,18 @@ export function createFacilitatorSchemeFromEnv(): ExactConcordiumScheme {
     finalizationTimeoutMs: 60_000,
     maxExpiryOffsetSeconds: MAX_EXPIRY_OFFSET_SECONDS,
   });
+}
+
+export function createFacilitatorSchemeFromEnv(): ExactConcordiumScheme {
+  const address = process.env.CCD_FACILITATOR_ADDRESS;
+  const privateKey = process.env.CCD_FACILITATOR_PRIVATE_KEY;
+  if (!address || !privateKey) {
+    throw new Error(
+      "facilitator: CCD_FACILITATOR_ADDRESS / CCD_FACILITATOR_PRIVATE_KEY are not set. " +
+        "This is a pending-key step: export the facilitator testnet account key from the wallet first.",
+    );
+  }
+  return createFacilitatorScheme(address, privateKey);
 }
 
 // ---------------------------------------------------------------------------
@@ -108,7 +116,10 @@ export function validateSponsoredTxOffline(
   const checks: RuleCheck[] = [];
   const sender = tx.header.sender;
   const sponsor = sponsorAddressOf(tx);
-  const isCcd = requirements.asset === "" || requirements.asset === "CCD";
+  // The SDK facilitator recognises native CCD only when the asset id is
+  // exactly "CCD" (case-insensitive); anything else — including "" — is
+  // treated as a PLT token id (live-verified against the SDK scheme).
+  const isCcd = requirements.asset.toUpperCase() === "CCD";
   const isTransfer = tx.payload.type === "transfer" || tx.payload.type === "transferWithMemo";
 
   // Rule 1 — transaction version must be exactly 1 (V1 sponsored format).
@@ -273,13 +284,27 @@ export function extractConcordiumPayload(
 }
 
 // ---------------------------------------------------------------------------
-// Minimal HTTP surface over the SDK scheme.
+// Minimal HTTP surface over a facilitator scheme.
 // Endpoints follow the x402 facilitator convention:
 //   GET  /supported -> SupportedResponse
 //   POST /verify    -> VerifyResponse   (body: VerifyRequest)
 //   POST /settle    -> SettleResponse   (body: SettleRequest)
-// The server is not started by this module; see startFacilitatorServer().
+// The server is not started by this module; see startFacilitatorServer()
+// and the runnable entry point in facilitator-service.ts.
 // ---------------------------------------------------------------------------
+
+/**
+ * The slice of the SDK's SchemeNetworkFacilitator interface that the HTTP
+ * surface actually calls. The SDK's ExactConcordiumScheme satisfies it
+ * structurally; the keyless dry-run scheme in facilitator-service.ts
+ * implements the same shape so the endpoints can be exercised offline.
+ */
+export interface FacilitatorSchemeLike {
+  getExtra(network: Network): Record<string, unknown> | undefined;
+  getSigners(network: string): string[];
+  verify(payload: PaymentPayload, requirements: PaymentRequirements): Promise<VerifyResponse>;
+  settle(payload: PaymentPayload, requirements: PaymentRequirements): Promise<SettleResponse>;
+}
 
 async function readJsonBody(req: IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = [];
@@ -295,7 +320,7 @@ function sendJson(res: ServerResponse, status: number, body: unknown): void {
   res.end(text);
 }
 
-export function createFacilitatorServer(scheme: ExactConcordiumScheme): Server {
+export function createFacilitatorServer(scheme: FacilitatorSchemeLike): Server {
   return createServer(async (req, res) => {
     try {
       if (req.method === "GET" && req.url === "/supported") {

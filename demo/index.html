@@ -162,15 +162,41 @@
     </p>
   </div>
 
+  <h2>Online settlement — the same round, settled on testnet (2026-11-27)</h2>
+  <div class="card">
+    <p>
+      The identical batch (12 obligations, gross 0.77 CCD) was netted to a single
+      <b>0.65 CCD</b> transfer and settled for real on Concordium testnet through the
+      project's self-hosted x402 facilitator, as a sponsored V1 transaction
+      (buyer signs, facilitator sponsors the fee). Independently re-read from the
+      chain afterwards: status <span class="pill">finalized</span>, sender cost 0,
+      sponsor cost 4.997954 CCD (the observed testnet price of sponsorship for this
+      transaction — see <code>docs/progress-2026-11-27-phase5-online-settlement.md</code>).
+    </p>
+    <dl class="kv">
+      <dt>Transaction</dt>
+      <dd><code>d07bc4637b81ffab7114d31b545eb84305ed62b5e2cee5b716cd8d6f17405cfd</code></dd>
+      <dt>Explorers</dt>
+      <dd><a href="https://ccdexplorer.io/testnet/transaction/d07bc4637b81ffab7114d31b545eb84305ed62b5e2cee5b716cd8d6f17405cfd">CCDExplorer</a>
+          &middot; <a href="https://testnet.ccdscan.io/transaction/d07bc4637b81ffab7114d31b545eb84305ed62b5e2cee5b716cd8d6f17405cfd">CCDScan</a></dd>
+      <dt>From → To</dt>
+      <dd>buyer agent <code>4AyXSvvT…c454</code> → seller agent <code>4f4i45cB…vLHm</code>, 650,000 microCCD</dd>
+      <dt>Receipt</dt>
+      <dd><code>rcpt-batch-demo-001</code> · verify = true · hash <code>c27e61e3ec620ed17e88d5b77aa5ba3a0191401a8888eca0fd1dae3a9062181b</code> · audit head <code>3dc17425c943a1d1c1a022b1df6b8f3e5e63d2aae0e2f80ccc87c93067ca65a8</code></dd>
+      <dt>Balances after</dt>
+      <dd>buyer 19,999.35 CCD · seller 20,000.65 CCD (chain-read, matches the net exactly)</dd>
+    </dl>
+  </div>
+
   <h2>Project status (honest snapshot, 2026-11-27)</h2>
   <div class="card">
     <table>
       <tr><th>Item</th><th>Status</th></tr>
       <tr><td>Settlement core (escrow ledger, hash chain, netting, Ed25519 receipts)</td><td>Implemented; offline end-to-end demo passes, TypeScript build clean</td></tr>
-      <tr><td>Self-hosted x402 facilitator service</td><td>Runs locally; verify/settle round-trip validated offline (dry-run). Live mode refuses to start without the facilitator key file</td></tr>
+      <tr><td>Self-hosted x402 facilitator service</td><td>Live on testnet: sponsored and settled the settlement below; dry-run round-trip also validated</td></tr>
       <tr><td>Agent Cards</td><td>Final versions generated via the official Agent Registry MCP and hosted byte-for-byte in the public repo (SHA-256 matches the MCP output)</td></tr>
-      <tr><td>On-chain agent registration + badges</td><td>Pending — needs three testnet accounts (buyer / seller / facilitator) and four owner wallet signatures</td></tr>
-      <tr><td>Live testnet x402 settlement</td><td>Pending — needs the buyer and facilitator test private keys exported from the wallet</td></tr>
+      <tr><td>On-chain agent registration + badges</td><td>Done — buyer token 1541, seller token 1542 on CIS-8004 (testnet 12802); card hashes pinned via setAgentURI; official check_badge reports badge_valid = true for both</td></tr>
+      <tr><td>Live testnet x402 settlement</td><td>Done — one net settlement of 0.65 CCD finalized on testnet (transaction linked above)</td></tr>
       <tr><td>Production</td><td>Not a production product. See <code>docs/path-to-production.md</code> in the repository for the gap list</td></tr>
     </table>
   </div>
@@ -178,7 +204,8 @@
   <footer>
     NeuralClear for Trusted Agents — a Concordium Trusted Agents Hackathon (Encode Club) entry.
     Testnet demonstration only; not a production payment product, with no customers and no live volume.
-    Amounts on this page are example data from a local offline run.
+    The step-by-step amounts above are from a local offline run of the same batch; the
+    “Online settlement” section records the real testnet run of that batch.
   </footer>
 
 </div>
