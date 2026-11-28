@@ -67,7 +67,7 @@
 <body>
 <div class="wrap">
 
-  <div class="banner">Offline demo &middot; testnet project &middot; example data</div>
+  <div class="banner">Testnet project &middot; offline round + live settlement &middot; example data</div>
 
   <h1>NeuralClear for Trusted Agents</h1>
   <p class="sub">
@@ -77,8 +77,8 @@
   <p class="note">
     This page shows one full settlement round produced by the project's offline demo
     (<code>npm run demo</code>, run on 2026-11-27). All amounts are testnet CCD with no real-world value.
-    The payment leg shown here is the offline stand-in, not a chain transaction; live testnet settlement
-    is pending the demo accounts described in the status section below.
+    The payment leg in this offline round is a stand-in, not a chain transaction; the same batch was
+    later settled live on testnet &mdash; see &ldquo;Live testnet settlement&rdquo; below.
   </p>
 
   <h2>The round, step by step</h2>
@@ -89,7 +89,7 @@
       <dt>Buyer</dt>
       <dd><code>34sQTxEssRTT7rDHmsmyf5TPYAcNWV27x3hKsBagu9eKZjmoik</code> (testnet owner account)</dd>
       <dt>Seller</dt>
-      <dd><code>SELLER_ACCOUNT_PENDING_CREATION</code> — placeholder; the seller testnet account has not been created yet</dd>
+      <dd><code>SELLER_ACCOUNT_PENDING_CREATION</code> — placeholder used in this offline run; the seller has since been created and registered on-chain (token 1542, <code>4f4i45cB7TM97Y2C7jrGqmmHexkRntnRfP97abZxQoC2dJvLHm</code>) and is the payee of the live settlement below</dd>
       <dt>Network</dt>
       <dd><code>ccd:4221332d34e1694168c2a0c0b3fd0f27</code> (Concordium testnet, CAIP-2)</dd>
       <dt>Escrow deposit</dt>
@@ -99,8 +99,9 @@
       In the full flow, both agents first verify each other's <em>Verified by Concordium</em> badge
       (Agent Registry, CIS-8004 / CIS-8) and refuse to trade if the badge is missing or revoked.
       The two agents' final Agent Cards have been generated with the official registry MCP and are
-      hosted byte-for-byte in the public repository; on-chain registration is still pending
-      (owner wallet signatures required).
+      hosted byte-for-byte in the public repository; both agents have since been registered
+      on-chain (buyer token 1541, seller token 1542) with the card hashes pinned via
+      <code>setAgentURI</code>, and both pass the official badge check (15 of 15 checks).
     </p>
   </div>
 
