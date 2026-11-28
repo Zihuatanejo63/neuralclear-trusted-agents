@@ -71,10 +71,10 @@
 **旁白（EN）**：
 > "Both agents are registered on the CIS-8004 identity registry — token 1541 and 1542.
 > Their ERC-8004 agent cards are hosted publicly, and their hashes are pinned on-chain.
-> The official badge check passes all fifteen checks for both agents:
-> badge valid, verified by Concordium."
+> The official badge check reports both badges valid: every pass-fail check green,
+> and no issues. Verified by Concordium."
 
-**屏幕字**：`CIS-8004 #1541 / #1542` · `check_badge: badge_valid = true (15/15)`
+**屏幕字**：`CIS-8004 #1541 / #1542` · `check_badge: badge_valid = true (all boolean checks pass, issues: none)`
 
 **素材**：浏览器 testnet-agent-registry.concordium.com 仪表盘（钱包连接状态现成）；
 check_badge 输出截图（Mac 上 MCP 结果文件已有，或录制时重跑一次）。
